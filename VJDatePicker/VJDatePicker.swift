@@ -8,25 +8,63 @@
 
 import UIKit
 
-public enum VJDatePickerType : String {
-    case Default
-    case YearOnly
-    case MonthOnly
-    case DateOnly
-    case YearMonth
-    case MonthDate
+public class VJDateComponents {
+
 }
-@IBDesignable
+
+public enum VJDatePickerType : String {
+    
+    case Default
+    case DayOnly
+    case MonthOnly
+    case YearOnly
+    case YearMonth
+    case MonthDay
+}
+
 class VJDatePicker: UIPickerView, UIPickerViewDataSource, UIPickerViewDelegate {
     
-    @IBInspectable var Type: Int?
+    var initialComponents : VJDateComponents?
     
-    var maxElements = Int(INT16_MAX)
-    var days : Array<Int>{
-        return [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31]
+    var minimumYearValue : Int!
+    var maximumYearValue : Int!
+    
+    private var selectedComponents : VJDateComponents{
+        return self.selectedComponents
     }
     
-    let months = ["January","February","March","April","May","June","July","August","September","October","November","December"]
+    var datePickerType: VJDatePickerType = .Default{
+        didSet{
+            reloadAllComponents()
+        }
+    }
+    
+    private var maxElements = Int(INT16_MAX)
+    
+    private var days : Array<Int>{
+        var dayArray = Array<Int>()
+        for day in 1...31{
+            dayArray.append(day)
+        }
+        return dayArray
+    }
+    private let months = ["January","February","March","April","May","June","July","August","September","October","November","December"]
+    
+    private var years : Array<Int>{
+        var yearArray = Array<Int>()
+        var minYear : Int = 1970
+        var maxYear : Int = 2016
+        if let _ = minimumYearValue{
+            minYear = minimumYearValue!
+        }
+        if let _ = maximumYearValue{
+            maxYear = maximumYearValue!
+        }
+        for year in minYear...maxYear{
+            yearArray.append(year)
+        }
+        return yearArray
+    }
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -38,10 +76,10 @@ class VJDatePicker: UIPickerView, UIPickerViewDataSource, UIPickerViewDelegate {
         commonInit()
     }
     
-    func commonInit(){
+    private func commonInit(){
         delegate = self
         showsSelectionIndicator = true
-        
+
         let currentMonth = 11
         let currentDate = 25
         let half = maxElements / 2
@@ -52,12 +90,17 @@ class VJDatePicker: UIPickerView, UIPickerViewDataSource, UIPickerViewDelegate {
         selectRow(selectedMonth - 1, inComponent: 0, animated: false)
     }
     
+    //MARK:- UIPickerView Delegates & DataSource
+    
     func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        
         switch component{
         case 0:
             return months[row % months.count]
         case 1:
             return String(days[row % days.count])
+        case 2:
+            return String(years[row])
         default:
             return ""
         }
@@ -67,14 +110,45 @@ class VJDatePicker: UIPickerView, UIPickerViewDataSource, UIPickerViewDelegate {
         
     }
     
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return Int(INT16_MAX)
-    }
     func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return 1
+        
+        // For giving infinite scrolling
+        switch component{
+        case 0:
+            return Int(INT16_MAX)
+        case 1:
+            return Int(INT16_MAX)
+        case 2:
+            return years.count
+        default:
+            return 0
+        }
     }
     
     func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
-        return 2
+        return getNumberOfComponentsForDatePickerType(datePickerType)
     }
+    
+    //MARK:- Convenience Methods 
+    
+    private func selectInitialValuesForDatePickerType(type: VJDatePickerType?){
+        
+    }
+    
+    private func getNumberOfComponentsForDatePickerType(type : VJDatePickerType?)->Int{
+        
+        var pickerType : VJDatePickerType = .Default
+        if let _ = type{
+            pickerType = type!
+        }
+        switch pickerType{
+        case .Default:
+            return 3
+        case .MonthDay,.YearMonth:
+            return 2
+        case .DayOnly,.MonthOnly,.YearOnly:
+            return 1
+        }
+    }
+    
 }
