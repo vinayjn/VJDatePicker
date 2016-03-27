@@ -44,7 +44,7 @@ public class VJDateComponents {
 
 class VJDatePicker: UIPickerView, UIPickerViewDataSource, UIPickerViewDelegate {
     
-    var initialComponents : VJDateComponents?
+    var initialComponents : VJDateComponents!
     
     var minimumYearValue : Int!
     var maximumYearValue : Int!
@@ -53,11 +53,7 @@ class VJDatePicker: UIPickerView, UIPickerViewDataSource, UIPickerViewDelegate {
         return self.selectedComponents
     }
     
-    var datePickerType: VJDatePickerType = .Default{
-        didSet{
-            reloadAllComponents()
-        }
-    }
+    var datePickerType: VJDatePickerType! = .Default
     
     private var maxElements = Int(INT16_MAX)
     
