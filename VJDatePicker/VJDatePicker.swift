@@ -72,15 +72,7 @@ class VJDatePicker: UIPickerView, UIPickerViewDataSource, UIPickerViewDelegate {
     
     private var years : Array<Int>{
         var yearArray = Array<Int>()
-        var minYear : Int = 1970
-        var maxYear : Int = 2016
-        if let _ = minimumYearValue{
-            minYear = minimumYearValue!
-        }
-        if let _ = maximumYearValue{
-            maxYear = maximumYearValue!
-        }
-        for year in minYear...maxYear{
+        for year in minimumYearValue...maximumYearValue{
             yearArray.append(year)
         }
         return yearArray
