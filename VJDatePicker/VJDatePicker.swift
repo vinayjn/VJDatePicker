@@ -97,16 +97,17 @@ class VJDatePicker: UIPickerView, UIPickerViewDataSource, UIPickerViewDelegate {
     
     private func commonInit(){
         delegate = self
+        if minimumYearValue == nil{
+            minimumYearValue = 1900
+        }
+        if maximumYearValue == nil{
+            maximumYearValue = 2037
+        }
+        if datePickerType == nil {
+            datePickerType = .Default
+        }
         showsSelectionIndicator = true
-
-        let currentMonth = 11
-        let currentDate = 25
-        let half = maxElements / 2
-        let selectedMonth = half + (months.count - (half % months.count)) + currentMonth
-        
-        let selectedDate = half + (days.count - (half % days.count)) + currentDate
-        selectRow(selectedDate - 1, inComponent: 1, animated: false)
-        selectRow(selectedMonth - 1, inComponent: 0, animated: false)
+        selectInitialValuesForDatePickerType(datePickerType)
     }
     
     //MARK:- UIPickerView Delegates & DataSource
