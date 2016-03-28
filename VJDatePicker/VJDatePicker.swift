@@ -73,7 +73,9 @@ class VJDatePicker: UIPickerView, UIPickerViewDataSource, UIPickerViewDelegate {
         }
         return yearArray
     }
-   
+    
+    private var rows : [Int]!
+    
     convenience init(type: VJDatePickerType, minYear : Int, maxYear : Int){
         self.init()
         minimumYearValue = minYear
@@ -103,6 +105,7 @@ class VJDatePicker: UIPickerView, UIPickerViewDataSource, UIPickerViewDelegate {
             datePickerType = .Default
         }
         showsSelectionIndicator = true
+        prepareRowsForVJDatePickerType(datePickerType)
         selectInitialValuesForDatePickerType(datePickerType)
     }
     
@@ -121,24 +124,13 @@ class VJDatePicker: UIPickerView, UIPickerViewDataSource, UIPickerViewDelegate {
             return ""
         }
     }
-    
+
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         
     }
     
     func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        
-        // For giving infinite scrolling
-        switch component{
-        case 0:
-            return Int(INT16_MAX)
-        case 1:
-            return Int(INT16_MAX)
-        case 2:
-            return years.count
-        default:
-            return 0
-        }
+        return rows[component]
     }
     
     func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
@@ -161,19 +153,41 @@ class VJDatePicker: UIPickerView, UIPickerViewDataSource, UIPickerViewDelegate {
         selectRow(selectedYear!, inComponent: 2, animated: false)
     }
     
-    private func getNumberOfComponentsForDatePickerType(type : VJDatePickerType?)->Int{
+    private func getNumberOfComponentsForDatePickerType(var type : VJDatePickerType?)->Int{
         
-        var pickerType : VJDatePickerType = .Default
-        if let _ = type{
-            pickerType = type!
+        if type == nil{
+            type = .Default
         }
-        switch pickerType{
+        switch type!{
         case .Default:
             return 3
         case .MonthDay,.YearMonth:
             return 2
         case .DayOnly,.MonthOnly,.YearOnly:
             return 1
+        }
+    }
+    
+    func prepareRowsForVJDatePickerType(type : VJDatePickerType){
+        switch type{
+        case .Default:
+            rows = [Int(INT16_MAX),Int(INT16_MAX),years.count]
+            break
+        case .DayOnly:
+            rows = [Int(INT16_MAX)]
+            break
+        case .MonthOnly:
+            rows = [Int(INT16_MAX)]
+            break
+        case .YearOnly:
+            rows = [years.count]
+            break
+        case .YearMonth:
+            rows = [years.count,Int(INT16_MAX)]
+            break
+        case .MonthDay:
+            rows = [Int(INT16_MAX),Int(INT16_MAX)]
+            break
         }
     }
     
