@@ -112,19 +112,66 @@ class VJDatePicker: UIPickerView, UIPickerViewDataSource, UIPickerViewDelegate {
     //MARK:- UIPickerView Delegates & DataSource
     
     func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        
-        switch component{
-        case 0:
-            return months[row % months.count]
-        case 1:
+        if isDayComponent(component){
             return String(days[row % days.count])
-        case 2:
-            return String(years[row])
-        default:
-            return ""
         }
+        if isMonthComponent(component){
+            return months[row % months.count]
+        }
+        if isYearComponent(component){
+            return String(years[row])
+        }
+        return ""
     }
-
+    
+    func isDayComponent(component : Int)->Bool{
+        switch datePickerType!{
+        case .Default,.MonthDay:
+            if component == 1 {
+                return true
+            }
+        case .DayOnly:
+            if component == 0 {
+                return true
+            }
+        default :
+            return false
+        }
+        return false
+    }
+    
+    func isMonthComponent(component : Int)->Bool{
+        switch datePickerType!{
+        case .Default,.MonthDay,.MonthOnly:
+            if component == 0 {
+                return true
+            }
+        case .YearMonth:
+            if component == 1 {
+                return true
+            }
+        default :
+            return false
+        }
+        return false
+    }
+    
+    func isYearComponent(component : Int)->Bool{
+        switch datePickerType! {
+        case .Default:
+            if component == 2 {
+                return true
+            }
+        case .YearMonth,.YearOnly:
+            if component == 0 {
+                return true
+            }
+        default :
+            return false
+        }
+        return false
+    }
+    
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         
     }
@@ -143,7 +190,6 @@ class VJDatePicker: UIPickerView, UIPickerViewDataSource, UIPickerViewDelegate {
         if initialComponents == nil {
             initialComponents = VJDateComponents()
         }
-        
         let half = maxElements / 2
         let selectedMonth = half + (months.count - (half % months.count)) + initialComponents.month!
         let selectedDate = half + (days.count - (half % days.count)) + initialComponents.day!
