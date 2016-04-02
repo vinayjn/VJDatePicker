@@ -15,6 +15,19 @@
 		A1695B781CA393C20012D3C4 /* VJDatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1695B771CA393C20012D3C4 /* VJDatePicker.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		A191D22F1CA90913006E4456 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		A1695B621CA3937B0012D3C4 /* VJDatePicker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VJDatePicker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1695B651CA3937B0012D3C4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -77,6 +90,7 @@
 				A1695B5E1CA3937B0012D3C4 /* Sources */,
 				A1695B5F1CA3937B0012D3C4 /* Frameworks */,
 				A1695B601CA3937B0012D3C4 /* Resources */,
+				A191D22F1CA90913006E4456 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
@@ -256,6 +270,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks $(CONFIGURATION_BUILD_DIR)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.praxify.VJDatePicker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -267,6 +282,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks $(CONFIGURATION_BUILD_DIR)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.praxify.VJDatePicker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};

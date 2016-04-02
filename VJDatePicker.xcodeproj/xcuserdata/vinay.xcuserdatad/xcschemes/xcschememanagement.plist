@@ -4,7 +4,12 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>VJDatePicker.xcscheme</key>
+		<key>NumberKeypad.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
+		<key>VJDatePicker.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>0</integer>
@@ -13,6 +18,11 @@
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
 		<key>A1695B611CA3937B0012D3C4</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>A191D2231CA90913006E4456</key>
 		<dict>
 			<key>primary</key>
 			<true/>
