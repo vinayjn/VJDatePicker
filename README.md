@@ -8,12 +8,12 @@ A `UIPickerView` subclass which removes the limitations of `iOS` default `UIDate
 ## Available types 
 
     enum VJDatePickerType : String {
-        case Default
-        case DayOnly
-        case MonthOnly
-        case YearOnly
-        case YearMonth
-        case MonthDay
+        case all
+        case dayOnly
+        case monthOnly
+        case yearOnly
+        case yearMonth
+        case monthDay
     }
 
 ## Usage
@@ -22,8 +22,8 @@ A `UIPickerView` subclass which removes the limitations of `iOS` default `UIDate
 
 or 
 
-    let picker = VJDatePicker(type: .MonthOnly, minYear: 1900, maxYear: 2037)
-    picker.datePickerType = .YearMonth
+    let picker = VJDatePicker(type: .monthOnly, minYear: 1900, maxYear: 2037)
+    picker.datePickerType = .yearMonth
     picker.frame = CGRectMake(0, 300, 320, 200)
     picker.datePickerDelegate = self
 
@@ -35,8 +35,8 @@ Conform to `VJDatePickerDelegate` and implement the delegate method :
     
 ## Requirements
 
-- Swift 2.2
-- Xcode 7.0 +
+- Swift 5
+- Xcode 10.2 +
 
 ## License
 
