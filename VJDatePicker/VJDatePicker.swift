@@ -8,31 +8,32 @@
 
 import UIKit
 
-public enum VJDatePickerType : String {
+public enum VJDatePickerType: String {
     
-    case Default
-    case DayOnly
-    case MonthOnly
-    case YearOnly
-    case YearMonth
-    case MonthDay
+    case all
+    case dayOnly
+    case monthOnly
+    case yearOnly
+    case yearMonth
+    case monthDay
 }
 
 public class VJDateComponents : NSObject {
     
-    var day : Int!
-    var month : Int!
-    var year : Int!
+    var day: Int
+    var month: Int
+    var year: Int
     
     // The default initializer sets components from
     // current system date
     
     override init(){
-        let calendar = NSCalendar.currentCalendar()
-        let todayComponents = calendar.components([.Day,.Month,.Year], fromDate: NSDate())
-        self.day = todayComponents.day
-        self.month = todayComponents.month
-        self.year = todayComponents.year
+        let calendar = Calendar.current
+        
+        let todayComponents = calendar.dateComponents([.day, .month, .year], from: Date())
+        self.day = todayComponents.day!
+        self.month = todayComponents.month!
+        self.year = todayComponents.year!
     }
     
     init(day : Int, month : Int, year : Int){
@@ -57,6 +58,8 @@ protocol VJDatePickerDelegate {
 
 class VJDatePicker: UIPickerView, UIPickerViewDataSource, UIPickerViewDelegate {
     
+    
+    
     var datePickerDelegate : VJDatePickerDelegate?
     
     private let month_31 = [1, 3, 5, 7, 8, 10, 12]
@@ -72,13 +75,9 @@ class VJDatePicker: UIPickerView, UIPickerViewDataSource, UIPickerViewDelegate {
         return _selectedComponents
     }
     
-    var datePickerType: VJDatePickerType! = .MonthDay{
+    var datePickerType: VJDatePickerType! = .monthDay {
         didSet{
-            self.alpha = 0.0
-            UIView.animateWithDuration(0.5, animations: { () -> Void in
-                self.alpha = 1.0
-                self.commonInit()
-                }, completion: nil)
+            self.commonInit()
         }
     }
     
@@ -126,69 +125,69 @@ class VJDatePicker: UIPickerView, UIPickerViewDataSource, UIPickerViewDelegate {
         if minimumYearValue == nil{
             minimumYearValue = 1900
         }
-        if maximumYearValue == nil{
+        if maximumYearValue == nil {
             maximumYearValue = 2037
         }
         if datePickerType == nil {
-            datePickerType = .Default
+            datePickerType = .all
         }
         showsSelectionIndicator = true
-        prepareRowsForVJDatePickerType(datePickerType)
-        selectInitialValuesForDatePickerType(datePickerType)
+        prepareRowsForVJDatePickerType(type: datePickerType)
+        selectInitialValuesForDatePickerType(type: datePickerType)
     }
     
     //MARK:- UIPickerView Delegates & DataSource
     
-    func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        if isDayComponent(component){
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        if isDayComponent(component: component){
             return String(days[row % days.count])
         }
-        if isMonthComponent(component){
+        if isMonthComponent(component: component){
             return months[row % months.count]
         }
-        if isYearComponent(component){
+        if isYearComponent(component: component){
             return String(years[row])
         }
         return ""
     }
     
-    func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         
-        if isDayComponent(component){
-            if datePickerType! != .DayOnly{
+        if isDayComponent(component: component){
+            if datePickerType! != .dayOnly{
                 let currentDate = row % days.count + 1
                 let currentMonth = _selectedComponents.month
                 let currentYear = _selectedComponents.year
-                validateDateForRow(currentDate, month: currentMonth, year: currentYear)
+                validateDateForRow(day: currentDate, month: currentMonth, year: currentYear)
             }
             else{
                 _selectedComponents.day = row % days.count + 1
             }
         }
         
-        if isMonthComponent(component){
+        if isMonthComponent(component: component){
             let currentMonth = row % months.count + 1
             _selectedComponents.month = currentMonth
-            validateDateForRow(_selectedComponents.day, month: _selectedComponents.month, year: years[row % years.count])
+            validateDateForRow(day: _selectedComponents.day, month: _selectedComponents.month, year: years[row % years.count])
         }
         
-        if isYearComponent(component) {
-            validateDateForRow(_selectedComponents.day, month: _selectedComponents.month, year: _selectedComponents.year)
+        if isYearComponent(component: component) {
+            validateDateForRow(day: _selectedComponents.day, month: _selectedComponents.month, year: _selectedComponents.year)
             _selectedComponents.year = years[row % years.count]
         }
         
         if let delegate = self.datePickerDelegate{
-            delegate.dateComponentsDidChange(_selectedComponents)
+            delegate.dateComponentsDidChange(dateComponents: _selectedComponents)
         }
     }
     
-    func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         return rows[component]
     }
     
-    func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
-        return getNumberOfComponentsForDatePickerType(datePickerType)
-    }
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return getNumberOfComponentsForDatePickerType(type: datePickerType)
+    }        
     
     //MARK:- Convenience Methods 
     
@@ -197,15 +196,15 @@ class VJDatePicker: UIPickerView, UIPickerViewDataSource, UIPickerViewDelegate {
         var rowToSelect = 0
         var component : Int!
         for i in 0..<self.numberOfComponents{
-            if isDayComponent(i){
-                rowToSelect = self.selectedRowInComponent(i)
+            if isDayComponent(component: i){
+                rowToSelect = self.selectedRow(inComponent: i)
                 component = i
             }
         }
         
         if day == 31 {
             if month == 2{
-                if isLeapYear(year){
+                if isLeapYear(year: year){
                     rowToSelect -= 3
                 }else{
                     rowToSelect -= 2
@@ -216,7 +215,7 @@ class VJDatePicker: UIPickerView, UIPickerViewDataSource, UIPickerViewDelegate {
         }
             
         else if day == 30 && month == 2{
-            if isLeapYear(year){
+            if isLeapYear(year: year){
                 rowToSelect -= 2
             }else{
                 rowToSelect -= 1
@@ -224,7 +223,7 @@ class VJDatePicker: UIPickerView, UIPickerViewDataSource, UIPickerViewDelegate {
         }
             
         else if day == 29 && month == 2{
-            if !isLeapYear(year){
+            if !isLeapYear(year: year){
                 rowToSelect -= 1
             }
         }
@@ -242,47 +241,44 @@ class VJDatePicker: UIPickerView, UIPickerViewDataSource, UIPickerViewDelegate {
             initialComponents = VJDateComponents()
         }
         let half = maxElements / 2
-        let selectedMonth = half + (months.count - (half % months.count)) + initialComponents.month!
-        let selectedDate = half + (days.count - (half % days.count)) + initialComponents.day!
-        let selectedYear = years.indexOf(initialComponents.year!)
+        let selectedMonth = half + (months.count - (half % months.count)) + initialComponents.month
+        let selectedDate = half + (days.count - (half % days.count)) + initialComponents.day
+        let selectedYear =  years.firstIndex(of: initialComponents.year)
         
         switch type!{
             
-        case .Default:
+        case .all:
             selectRow(selectedDate - 1, inComponent: 1, animated: false)
             selectRow(selectedMonth - 1, inComponent: 0, animated: false)
             selectRow(selectedYear!, inComponent: 2, animated: false)
-        case .MonthDay:
+        case .monthDay:
             selectRow(selectedDate - 1, inComponent: 1, animated: false)
             selectRow(selectedMonth - 1, inComponent: 0, animated: false)
             break
-        case .MonthOnly:
+        case .monthOnly:
             selectRow(selectedMonth - 1, inComponent: 0, animated: false)
             break
-        case .DayOnly:
+        case .dayOnly:
             selectRow(selectedDate - 1, inComponent: 0, animated: false)
             break
-        case .YearMonth:
+        case .yearMonth:
             selectRow(selectedMonth - 1, inComponent: 1, animated: false)
             selectRow(selectedYear!, inComponent: 0, animated: false)
             break
-        case .YearOnly:
+        case .yearOnly:
             selectRow(selectedYear!, inComponent: 0, animated: false)
             break
         }
     }
     
-    private func getNumberOfComponentsForDatePickerType(var type : VJDatePickerType?)->Int{
+    private func getNumberOfComponentsForDatePickerType(type : VJDatePickerType? = .all)->Int{
         
-        if type == nil{
-            type = .Default
-        }
         switch type!{
-        case .Default:
+        case .all:
             return 3
-        case .MonthDay,.YearMonth:
+        case .monthDay, .yearMonth:
             return 2
-        case .DayOnly,.MonthOnly,.YearOnly:
+        case .dayOnly, .monthOnly, .yearOnly:
             return 1
         }
     }
@@ -290,22 +286,22 @@ class VJDatePicker: UIPickerView, UIPickerViewDataSource, UIPickerViewDelegate {
     private func prepareRowsForVJDatePickerType(type : VJDatePickerType){
         
         switch type{
-        case .Default:
+        case .all:
             rows = [Int(INT16_MAX),Int(INT16_MAX),years.count]
             break
-        case .DayOnly:
+        case .dayOnly:
             rows = [Int(INT16_MAX)]
             break
-        case .MonthOnly:
+        case .monthOnly:
             rows = [Int(INT16_MAX)]
             break
-        case .YearOnly:
+        case .yearOnly:
             rows = [years.count]
             break
-        case .YearMonth:
+        case .yearMonth:
             rows = [years.count,Int(INT16_MAX)]
             break
-        case .MonthDay:
+        case .monthDay:
             rows = [Int(INT16_MAX),Int(INT16_MAX)]
             break
         }
@@ -313,11 +309,11 @@ class VJDatePicker: UIPickerView, UIPickerViewDataSource, UIPickerViewDelegate {
     
     private func isDayComponent(component : Int)->Bool{
         switch datePickerType!{
-        case .Default,.MonthDay:
+        case .all, .monthDay:
             if component == 1 {
                 return true
             }
-        case .DayOnly:
+        case .dayOnly:
             if component == 0 {
                 return true
             }
@@ -329,11 +325,11 @@ class VJDatePicker: UIPickerView, UIPickerViewDataSource, UIPickerViewDelegate {
     
     private func isMonthComponent(component : Int)->Bool{
         switch datePickerType!{
-        case .Default,.MonthDay,.MonthOnly:
+        case .all, .monthDay, .monthOnly:
             if component == 0 {
                 return true
             }
-        case .YearMonth:
+        case .yearMonth:
             if component == 1 {
                 return true
             }
@@ -345,11 +341,11 @@ class VJDatePicker: UIPickerView, UIPickerViewDataSource, UIPickerViewDelegate {
     
     private func isYearComponent(component : Int)->Bool{
         switch datePickerType! {
-        case .Default:
+        case .all:
             if component == 2 {
                 return true
             }
-        case .YearMonth,.YearOnly:
+        case .yearMonth, .yearOnly:
             if component == 0 {
                 return true
             }
@@ -366,7 +362,7 @@ class VJDatePicker: UIPickerView, UIPickerViewDataSource, UIPickerViewDelegate {
         
         if currentMonth == 2{
             
-            let leapYear = isLeapYear(currentYear)
+            let leapYear = isLeapYear(year: currentYear)
             if leapYear {
                 
             }else{

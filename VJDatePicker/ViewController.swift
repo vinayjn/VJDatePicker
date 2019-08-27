@@ -9,15 +9,15 @@
 import UIKit
 
 class ViewController: UIViewController, VJDatePickerDelegate {
-    var picker : VJDatePicker!
+    
+    @IBOutlet weak var picker: VJDatePicker!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        picker = VJDatePicker()
-        view.addSubview(picker)
-        picker.frame = CGRectMake(0, 0, 320, 200)
-        picker.center = view.center
         picker.datePickerDelegate = self
     }
+    
+    
     
     @IBAction func changedDatePicker(sender: UIButton) {
         
